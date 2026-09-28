@@ -1,0 +1,204 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\!SULI\\!backend\\BlogApi\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\controllers\\blogcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\controllers\\blogcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\dtos\\bloggernameandemail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\dtos\\bloggernameandemail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\blogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\blogger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\controllers\\blogposcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\controllers\\blogposcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\dtos\\updatepostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\dtos\\updatepostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\dtos\\addnewpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\dtos\\addnewpostdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\dtos\\updatebloggerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\dtos\\updatebloggerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\dtos\\addnewbloggerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\dtos\\addnewbloggerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\properties\\models\\blogpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\properties\\models\\blogpost.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|c:\\!suli\\!backend\\blogapi\\blogapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDC53E20-1ADF-7C7D-1FE1-5874878FD458}|BlogApi\\BlogApi.csproj|solutionrelative:blogapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "BloggerNameAndEmail.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\BloggerNameAndEmail.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\DTOs\\BloggerNameAndEmail.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\BloggerNameAndEmail.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\DTOs\\BloggerNameAndEmail.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-28T14:31:29.758Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AddNewPostDto.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\AddNewPostDto.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\DTOs\\AddNewPostDto.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\AddNewPostDto.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\DTOs\\AddNewPostDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T13:41:18.646Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BlogposController.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Controllers\\BlogposController.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Controllers\\BlogposController.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Controllers\\BlogposController.cs",
+              "RelativeToolTip": "BlogApi\\Controllers\\BlogposController.cs",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAUwKoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T12:40:02.508Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "BlogController.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Controllers\\BlogController.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Controllers\\BlogController.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Controllers\\BlogController.cs",
+              "RelativeToolTip": "BlogApi\\Controllers\\BlogController.cs",
+              "ViewState": "AgIAAFwAAAAAAAAAAAAgwHoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T20:18:04.299Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Blogpost.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\Blogpost.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\Blogpost.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\Blogpost.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\Blogpost.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T12:39:09.895Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UpdateBloggerDto.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\UpdateBloggerDto.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\DTOs\\UpdateBloggerDto.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\UpdateBloggerDto.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\DTOs\\UpdateBloggerDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T12:19:23.24Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "AddNewBloggerDto.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\AddNewBloggerDto.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\DTOs\\AddNewBloggerDto.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\AddNewBloggerDto.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\DTOs\\AddNewBloggerDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-27T12:18:12.305Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\appsettings.json",
+              "RelativeDocumentMoniker": "BlogApi\\appsettings.json",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\appsettings.json",
+              "RelativeToolTip": "BlogApi\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-09-17T20:21:25.384Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Blogger.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\Blogger.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\Blogger.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\Blogger.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\Blogger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-17T15:18:36.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UpdatePostDto.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\UpdatePostDto.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Properties\\Models\\DTOs\\UpdatePostDto.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Properties\\Models\\DTOs\\UpdatePostDto.cs",
+              "RelativeToolTip": "BlogApi\\Properties\\Models\\DTOs\\UpdatePostDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-28T13:18:47.543Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Program.cs",
+              "RelativeDocumentMoniker": "BlogApi\\Program.cs",
+              "ToolTip": "C:\\!SULI\\!backend\\BlogApi\\BlogApi\\Program.cs",
+              "RelativeToolTip": "BlogApi\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAACVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-15T16:16:48.278Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
