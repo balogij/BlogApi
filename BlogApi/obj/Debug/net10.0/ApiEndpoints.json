@@ -80,6 +80,22 @@
   },
   {
     "ContainingType": "BlogApi.Controllers.BloggerController",
+    "Method": "GetNameAndAllPostbyId",
+    "RelativePath": "blogger/NameAndAllPostbyId",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BlogApi.Controllers.BloggerController",
     "Method": "GetBloggerNameAndEmailById",
     "RelativePath": "blogger/NameAndEmailbyId",
     "HttpMethod": "GET",

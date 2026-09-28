@@ -34,3 +34,4 @@ C:\!SULI\!backend\BlogApi\BlogApi\obj\Debug\net10.0\BlogApi.genruntimeconfig.cac
 C:\!SULI\!backend\BlogApi\BlogApi\obj\Debug\net10.0\ref\BlogApi.dll
 C:\!SULI\!backend\BlogApi\BlogApi\bin\Debug\net10.0\Scalar.AspNetCore.dll
 C:\!SULI\!backend\BlogApi\BlogApi\bin\Debug\net10.0\MySqlConnector.dll
+C:\!SULI\!backend\BlogApi\BlogApi\obj\Debug\net10.0\BlogApi.sourcelink.json

@@ -135,6 +135,43 @@ namespace BlogApi.Controllers
         }
 
 
+        [HttpGet("NameAndAllPostbyId")]
+        public object GetNameAndAllPostbyId(int id)
+        {
+            var connector = new MySqlConnection(ConnectionString);
+
+            connector.Open();
+
+            string sql = @"SELECT blogger.name, blogpost.title, blogpost.content FROM blogger INNER JOIN blogpost ON blogger.id = blogpost.blogId WHERE blogger.id = @id";
+
+            var cmd = new MySqlCommand(sql, connector);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            var datareader = cmd.ExecuteReader();
+
+            var posts = new List<object>();
+
+            while (datareader.Read())
+            {
+                posts.Add(new
+                {
+                    Name = datareader.GetString("name"),
+                    Title = datareader.GetString("title"),
+                    Content = datareader.GetString("content")
+                });
+            }
+
+            connector.Close();
+
+            return new
+            {
+                message = "Sikeres lekérdezés",
+                result = posts
+            };
+
+        }
+
+
         [HttpPost]
         public object AddNewBlogger(AddNewBloggerDto addNewBloggerDto)
         {
