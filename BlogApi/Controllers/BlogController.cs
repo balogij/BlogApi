@@ -171,6 +171,51 @@ namespace BlogApi.Controllers
 
         }
 
+        [HttpGet("TotalPostsCount")]
+        public object GetTotalPostsCount()
+        {
+            var connector = new MySqlConnection(ConnectionString);
+
+            connector.Open();
+
+            string sql = @"SELECT COUNT(*) FROM `blogpost`";
+
+            var cmd = new MySqlCommand(sql, connector);
+
+            int totalPosts = Convert.ToInt32(cmd.ExecuteScalar());
+
+            connector.Close();
+
+            return new
+            {
+                message = "Sikeres lekérdezés",
+                result = new { totalPosts = totalPosts }
+            };
+        }
+
+        [HttpGet("PostCountByBloggerId")]
+        public object GetPostCountByBloggerId(int id)
+        {
+            var connector = new MySqlConnection(ConnectionString);
+
+            connector.Open();
+
+            string sql = @"SELECT COUNT(*) FROM `blogpost` WHERE `blogId` = @id";
+
+            var cmd = new MySqlCommand(sql, connector);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            int postCount = Convert.ToInt32(cmd.ExecuteScalar());
+
+            connector.Close();
+
+            return new
+            {
+                message = "Sikeres lekérdezés",
+                result = new { bloggerId = id, postCount = postCount }
+            };
+        }
+
 
         [HttpPost]
         public object AddNewBlogger(AddNewBloggerDto addNewBloggerDto)

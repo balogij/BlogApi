@@ -111,6 +111,32 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "BlogApi.Controllers.BloggerController",
+    "Method": "GetPostCountByBloggerId",
+    "RelativePath": "blogger/PostCountByBloggerId",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BlogApi.Controllers.BloggerController",
+    "Method": "GetTotalPostsCount",
+    "RelativePath": "blogger/TotalPostsCount",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "BlogApi.Controllers.BlogposController",
     "Method": "GetAllPost",
     "RelativePath": "blogpost",
