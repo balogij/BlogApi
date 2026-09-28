@@ -12,6 +12,17 @@ namespace BlogApi
 
             builder.Services.AddTransient<MySqlConnection>(_ => new MySqlConnection(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // 1. CORS szolgáltatás hozzáadása
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+                });
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -21,6 +32,8 @@ namespace BlogApi
             builder.Services.AddHttpClient();
 
             var app = builder.Build();
+            // 2. CORS middleware bekapcsolása (Fontos: az UseAuthorization / MapControllers ELŐTT legyen!)
+            app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

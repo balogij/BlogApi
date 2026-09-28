@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog API - Működő Kliens</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f4f4f9; color: #333; }
+        .container { display: flex; gap: 20px; }
+        .main { flex: 2; }
+        .sidebar { flex: 1; background: #1e1e1e; color: #4ec9b0; padding: 15px; border-radius: 5px; font-family: monospace; }
+        table { width: 100%; border-collapse: collapse; background: #fff; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #eee; }
+        .card { background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ddd; }
+        button { cursor: pointer; padding: 6px 12px; margin-right: 5px; }
+        input, textarea { padding: 6px; margin: 4px 0; width: 95%; box-sizing: border-box; }
+        .task-row { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; }
+    </style>
+</head>
+<body>
+
+    <h1>Blog API Kezelőfelület</h1>
+
+    <div class="card">
+        <label><strong>Szerver URL:</strong> </label>
+        <select id="serverUrl">
+            <option value="https://localhost:7192">https://localhost:7192</option>
+            <option value="https://localhost:5024">https://localhost:5024</option>
+        </select>
+        
+        <label style="margin-left: 20px;">
+            <input type="checkbox" id="mockToggle" checked onchange="loadAllData()"> 
+            <strong>Mock Mód (Offline teszteléshez)</strong>
+        </label>
+    </div>
+
+    <div class="container">
+        <div class="main">
+            
+            <!-- FELADATOK (4, 5, 6, 7) -->
+            <div class="card">
+                <h3>Kijelölt Feladatok (4, 5, 6, 7)</h3>
+                <div class="task-row">
+                    <strong>4. Feladat (Név, Email):</strong><br>
+                    <input type="number" id="t4_id" value="1" style="width:80px;">
+                    <button onclick="task4()">Futtatás (GET)</button>
+                </div>
+                <div class="task-row">
+                    <strong>5. Feladat (Név + Postok JOIN):</strong><br>
+                    <input type="number" id="t5_id" value="1" style="width:80px;">
+                    <button onclick="task5()">Futtatás (GET)</button>
+                </div>
+                <div class="task-row">
+                    <strong>6. Feladat (Összes post count):</strong><br>
+                    <button onclick="task6()">Lekérdezés (GET)</button>
+                </div>
+                <div class="task-row">
+                    <strong>7. Feladat (Blogger post count):</strong><br>
+                    <input type="number" id="t7_id" value="1" style="width:80px;">
+                    <button onclick="task7()">Futtatás (GET)</button>
+                </div>
+            </div>
+
+            <!-- BLOGGER TÁBLA & CRUD -->
+            <div class="card">
+                <h3>Bloggerek (INSERT, UPDATE, DELETE)</h3>
+                
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                    <strong id="b_form_title">Új Blogger Hozzáadása (INSERT)</strong>
+                    <input type="hidden" id="b_id">
+                    <input type="text" id="b_name" placeholder="Név">
+                    <input type="email" id="b_email" placeholder="Email">
+                    <input type="number" id="b_age" placeholder="Kor" value="25">
+                    <input type="password" id="b_pass" placeholder="Jelszó" value="123">
+                    <div style="margin-top: 5px;">
+                        <button onclick="saveBlogger()">Mentés (POST / PUT)</button>
+                        <button onclick="resetBloggerForm()">Mégse / Új</button>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Név</th><th>Email</th><th>Kor</th><th>Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bloggerTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- BLOGPOST TÁBLA & CRUD -->
+            <div class="card">
+                <h3>Blogpostok (INSERT, UPDATE, DELETE)</h3>
+
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                    <strong id="p_form_title">Új Blogpost Hozzáadása (INSERT)</strong>
+                    <input type="hidden" id="p_id">
+                    <input type="text" id="p_title" placeholder="Cím (Title)">
+                    <textarea id="p_content" placeholder="Tartalom (Content)" rows="3"></textarea>
+                    <div id="p_blogId_div">
+                        <input type="number" id="p_blogId" placeholder="Blogger ID (blogId)" value="1">
+                    </div>
+                    <div style="margin-top: 5px;">
+                        <button onclick="savePost()">Mentés (POST / PUT)</button>
+                        <button onclick="resetPostForm()">Mégse / Új</button>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Cím</th><th>Tartalom</th><th>BlogId</th><th>Műveletek</th>
+                        </tr>
+                    </thead>
+                    <tbody id="postTableBody"></tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- JOBB OLDALI VÁLASZ KONZOL -->
+        <div class="sidebar">
+            <h3>API Válasz Konzol</h3>
+            <pre id="consoleOutput">// Az adatok automatikusan betöltődnek...</pre>
+        </div>
+    </div>
+
+    <script>
+        // MOCK ADATOK OFFLINE HASZNÁLATRA
+        let mockDb = {
+            bloggers: [
+                { id: 1, name: "Kovacs Bela", email: "kovacs.bela@gmail.com", age: 34, password: "123" },
+                { id: 2, name: "Nagy Aniko", email: "nagy.aniko@freemail.hu", age: 28, password: "123" }
+            ],
+            posts: [
+                { id: 101, title: "Első Post", content: "Minta tartalom leírása", blogId: 1 },
+                { id: 102, title: "Második Post", content: "C# Web API fejlesztés", blogId: 1 }
+            ]
+        };
+
+        let currentBloggers = [];
+        let currentPosts = [];
+
+        window.onload = function() {
+            loadAllData();
+        };
+
+        function loadAllData() {
+            loadBloggers();
+            loadPosts();
+        }
+
+        async function sendRequest(endpoint, method = 'GET', body = null) {
+            const isMock = document.getElementById('mockToggle').checked;
+            const baseUrl = document.getElementById('serverUrl').value;
+
+            if (isMock) {
+                return handleMock(endpoint, method, body);
+            }
+
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body !== null) options.body = JSON.stringify(body);
+
+                const res = await fetch(baseUrl + endpoint, options);
+                const data = await res.json();
+                showConsole(data);
+                return data;
+            } catch (err) {
+                showConsole({ error: "Szerver nem elérhető!", details: err.message });
+                return null;
+            }
+        }
+
+        function handleMock(endpoint, method, body) {
+            let res = null;
+            if (endpoint.includes('/blogger/NameAndEmailbyId')) {
+                let id = parseInt(endpoint.split('=')[1]);
+                let b = mockDb.bloggers.find(x => x.id == id);
+                res = { message: "Sikeres lekérdezés", result: b ? { name: b.name, email: b.email } : null };
+            } 
+            else if (endpoint.includes('/blogger/NameAndAllPostbyId')) {
+                let id = parseInt(endpoint.split('=')[1]);
+                let b = mockDb.bloggers.find(x => x.id == id);
+                let p = mockDb.posts.filter(x => x.blogId == id).map(x => ({ name: b ? b.name : "", title: x.title, content: x.content }));
+                res = { message: "Sikeres lekérdezés", result: p };
+            } 
+            else if (endpoint.includes('/blogger/TotalPostsCount')) {
+                res = { message: "Sikeres lekérdezés", result: { totalPosts: mockDb.posts.length } };
+            } 
+            else if (endpoint.includes('/blogger/PostCountByBloggerId')) {
+                let id = parseInt(endpoint.split('=')[1]);
+                res = { message: "Sikeres lekérdezés", result: { bloggerId: id, postCount: mockDb.posts.filter(x => x.blogId == id).length } };
+            } 
+            else if (endpoint === '/blogger' && method === 'GET') {
+                res = { message: "Sikeres lekérdezés", result: mockDb.bloggers };
+            } 
+            else if (endpoint === '/blogger' && method === 'POST') {
+                let id = mockDb.bloggers.length ? Math.max(...mockDb.bloggers.map(x => x.id)) + 1 : 1;
+                mockDb.bloggers.push({ id: id, ...body });
+                res = { message: "Sikeres felvétel", result: body };
+            } 
+            else if (endpoint.includes('/blogger?id=') && method === 'PUT') {
+                let id = parseInt(endpoint.split('=')[1]);
+                let b = mockDb.bloggers.find(x => x.id == id);
+                if (b) Object.assign(b, body);
+                res = { message: "Sikeres frissítés", result: body };
+            } 
+            else if (endpoint === '/blogger' && method === 'DELETE') {
+                mockDb.bloggers = mockDb.bloggers.filter(x => x.id != body);
+                res = { message: "Sikeres törlés" };
+            } 
+            else if (endpoint === '/blogpost' && method === 'GET') {
+                res = { message: "Sikeres lekérdezés", result: mockDb.posts };
+            } 
+            else if (endpoint === '/blogpost' && method === 'POST') {
+                let id = mockDb.posts.length ? Math.max(...mockDb.posts.map(x => x.id)) + 1 : 101;
+                mockDb.posts.push({ id: id, ...body });
+                res = { message: "Sikeres felvétel", result: body };
+            } 
+            else if (endpoint.includes('/blogpost?id=') && method === 'PUT') {
+                let id = parseInt(endpoint.split('=')[1]);
+                let p = mockDb.posts.find(x => x.id == id);
+                if (p) { p.title = body.title; p.content = body.content; }
+                res = { message: "Sikeres frissítés", result: body };
+            } 
+            else if (endpoint === '/blogpost' && method === 'DELETE') {
+                mockDb.posts = mockDb.posts.filter(x => x.id != body);
+                res = { message: "Sikeres törlés" };
+            }
+
+            showConsole(res);
+            return res;
+        }
+
+        function showConsole(data) {
+            document.getElementById('consoleOutput').innerText = JSON.stringify(data, null, 2);
+        }
+
+        // 4, 5, 6, 7. Feladatok
+        function task4() { sendRequest('/blogger/NameAndEmailbyId?id=' + document.getElementById('t4_id').value); }
+        function task5() { sendRequest('/blogger/NameAndAllPostbyId?id=' + document.getElementById('t5_id').value); }
+        function task6() { sendRequest('/blogger/TotalPostsCount'); }
+        function task7() { sendRequest('/blogger/PostCountByBloggerId?id=' + document.getElementById('t7_id').value); }
+
+        // Blogger Kezelés
+        async function loadBloggers() {
+            let res = await sendRequest('/blogger');
+            currentBloggers = (res && res.result) ? res.result : [];
+            let tbody = document.getElementById('bloggerTableBody');
+            tbody.innerHTML = '';
+            currentBloggers.forEach(b => {
+                let id = b.id || b.Id;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${b.name || b.Name}</td>
+                        <td>${b.email || b.Email}</td>
+                        <td>${b.age || b.Age}</td>
+                        <td>
+                            <button onclick="editBlogger(${id})">Szerkesztés</button>
+                            <button onclick="deleteBlogger(${id})">Törlés</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editBlogger(id) {
+            let b = currentBloggers.find(x => (x.id || x.Id) == id);
+            if (!b) return;
+            document.getElementById('b_form_title').innerText = "Blogger Szerkesztése (UPDATE #" + id + ")";
+            document.getElementById('b_id').value = id;
+            document.getElementById('b_name').value = b.name || b.Name;
+            document.getElementById('b_email').value = b.email || b.Email;
+            document.getElementById('b_age').value = b.age || b.Age;
+        }
+
+        function resetBloggerForm() {
+            document.getElementById('b_form_title').innerText = "Új Blogger Hozzáadása (INSERT)";
+            document.getElementById('b_id').value = "";
+            document.getElementById('b_name').value = "";
+            document.getElementById('b_email').value = "";
+            document.getElementById('b_age').value = "25";
+        }
+
+        async function saveBlogger() {
+            let id = document.getElementById('b_id').value;
+            let dto = {
+                name: document.getElementById('b_name').value,
+                email: document.getElementById('b_email').value,
+                age: parseInt(document.getElementById('b_age').value),
+                password: document.getElementById('b_pass').value
+            };
+            if (id) {
+                await sendRequest('/blogger?id=' + id, 'PUT', dto);
+            } else {
+                await sendRequest('/blogger', 'POST', dto);
+            }
+            resetBloggerForm();
+            loadBloggers();
+        }
+
+        async function deleteBlogger(id) {
+            if (confirm("Törli ezt a bloggert?")) {
+                await sendRequest('/blogger', 'DELETE', parseInt(id));
+                loadBloggers();
+            }
+        }
+
+        // Post Kezelés
+        async function loadPosts() {
+            let res = await sendRequest('/blogpost');
+            currentPosts = (res && res.result) ? res.result : [];
+            let tbody = document.getElementById('postTableBody');
+            tbody.innerHTML = '';
+            currentPosts.forEach(p => {
+                let id = p.id || p.Id;
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${p.title || p.Title}</td>
+                        <td>${p.content || p.Content}</td>
+                        <td>${p.blogId}</td>
+                        <td>
+                            <button onclick="editPost(${id})">Szerkesztés</button>
+                            <button onclick="deletePost(${id})">Törlés</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function editPost(id) {
+            let p = currentPosts.find(x => (x.id || x.Id) == id);
+            if (!p) return;
+            document.getElementById('p_form_title').innerText = "Blogpost Szerkesztése (UPDATE #" + id + ")";
+            document.getElementById('p_id').value = id;
+            document.getElementById('p_title').value = p.title || p.Title;
+            document.getElementById('p_content').value = p.content || p.Content;
+            document.getElementById('p_blogId_div').style.display = "none";
+        }
+
+        function resetPostForm() {
+            document.getElementById('p_form_title').innerText = "Új Blogpost Hozzáadása (INSERT)";
+            document.getElementById('p_id').value = "";
+            document.getElementById('p_title').value = "";
+            document.getElementById('p_content').value = "";
+            document.getElementById('p_blogId_div').style.display = "block";
+        }
+
+        async function savePost() {
+            let id = document.getElementById('p_id').value;
+            if (id) {
+                let dto = {
+                    title: document.getElementById('p_title').value,
+                    content: document.getElementById('p_content').value
+                };
+                await sendRequest('/blogpost?id=' + id, 'PUT', dto);
+            } else {
+                let dto = {
+                    title: document.getElementById('p_title').value,
+                    content: document.getElementById('p_content').value,
+                    blogId: parseInt(document.getElementById('p_blogId').value)
+                };
+                await sendRequest('/blogpost', 'POST', dto);
+            }
+            resetPostForm();
+            loadPosts();
+        }
+
+        async function deletePost(id) {
+            if (confirm("Törli ezt a posztot?")) {
+                await sendRequest('/blogpost', 'DELETE', parseInt(id));
+                loadPosts();
+            }
+        }
+    </script>
+</body>
+</html>

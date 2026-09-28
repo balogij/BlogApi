@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="hu" class="h-full bg-slate-900 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog API Kezelőfelület & Tesztelő</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for raw response viewing */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand & Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-gradient-to-tr from-brand-600 to-indigo-600 rounded-xl shadow-lg shadow-brand-500/20">
+                        <i class="fa-solid fa-blog text-xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg text-white tracking-wide">Blog API Client</span>
+                        <span class="text-xs text-brand-400 block font-mono">C# ASP.NET Core Backend</span>
+                    </div>
+                </div>
+
+                <!-- API Server Base URL Controls -->
+                <div class="hidden md:flex items-center space-x-3 bg-slate-900/80 p-1.5 rounded-lg border border-slate-700/80">
+                    <i class="fa-solid fa-server text-xs text-slate-400 pl-2"></i>
+                    <label for="baseUrlInput" class="text-xs text-slate-400 font-medium">Szerver URL:</label>
+                    <input type="text" id="baseUrlInput" value="http://localhost:7192" 
+                        class="bg-slate-800 border border-slate-600 text-slate-200 text-xs rounded px-2.5 py-1 focus:outline-none focus:border-brand-500 font-mono w-48">
+                    
+                    <!-- Quick URL Presets -->
+                    <select id="presetUrls" onchange="setBaseUrl(this.value)" class="bg-slate-800 border border-slate-600 text-slate-300 text-xs rounded px-2 py-1 focus:outline-none">
+                        <option value="http://localhost:5024">5024 (HTTP)</option>
+                        <option value="https://localhost:7192">7192 (HTTPS)</option>
+                    </select>
+
+                    <!-- Mock Data Toggle -->
+                    <div class="flex items-center ml-2 pl-2 border-l border-slate-700 space-x-2">
+                        <input type="checkbox" id="mockToggle" onchange="toggleMockMode(this.checked)" class="w-4 h-4 text-brand-600 rounded border-slate-700 bg-slate-800 focus:ring-brand-500">
+                        <label for="mockToggle" class="text-xs font-semibold text-amber-400 cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-vial text-amber-400"></i> Mock Mód
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Status Badge -->
+                <div id="connectionStatus" class="flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="statusText">Készenlétben</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col w-full">
+
+        <!-- Mobile URL Config Bar -->
+        <div class="md:hidden mb-4 p-3 bg-slate-800 rounded-lg border border-slate-700 flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-medium text-slate-400">API Szerver Beállítása:</span>
+                <label class="text-xs font-semibold text-amber-400 flex items-center gap-1">
+                    <input type="checkbox" id="mockToggleMobile" onchange="toggleMockMode(this.checked)" class="rounded bg-slate-700"> Mock Mód
+                </label>
+            </div>
+            <div class="flex gap-2">
+                <input type="text" id="baseUrlInputMobile" value="http://localhost:5000" 
+                    class="bg-slate-900 border border-slate-600 text-slate-200 text-xs rounded p-2 flex-1 font-mono">
+                <button onclick="syncMobileUrl()" class="bg-brand-600 text-white text-xs px-3 py-1 rounded">Mentés</button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-slate-700/80 mb-6 flex space-x-2 sm:space-x-4 overflow-x-auto pb-1">
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn active px-4 py-2.5 rounded-t-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 border-b-2 border-brand-500 text-brand-400 bg-slate-800/50">
+                <i class="fa-solid fa-list-check text-brand-400"></i>
+                <span>4-7. Feladatok Tesztelője</span>
+            </button>
+            <button onclick="switchTab('bloggers')" id="tab-bloggers" class="tab-btn px-4 py-2.5 rounded-t-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/30">
+                <i class="fa-solid fa-users"></i>
+                <span>Blogger Kezelő (/blogger)</span>
+            </button>
+            <button onclick="switchTab('posts')" id="tab-posts" class="tab-btn px-4 py-2.5 rounded-t-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/30">
+                <i class="fa-solid fa-newspaper"></i>
+                <span>Blogbejegyzések (/blogpost)</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: Feladatok 4-7 Showcase -->
+        <div id="content-tasks" class="tab-content flex-1 flex flex-col gap-6">
+            <div class="bg-gradient-to-r from-slate-800 to-slate-800/70 p-5 rounded-2xl border border-slate-700/80 shadow-md">
+                <h2 class="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-brand-400"></i> Bekért Végpontok (4, 5, 6, 7. Feladat)
+                </h2>
+                <p class="text-slate-400 text-xs">
+                    Itt közvetlenül tesztelheti a megadott C# vezérlő (`BloggerController.cs`) specifikus feladat-végpontjait.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Task 4 Card -->
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700/80 flex flex-col justify-between hover:border-brand-500/50 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">4. Feladat</span>
+                            <span class="text-xs font-mono text-slate-400">GET</span>
+                        </div>
+                        <h3 class="font-semibold text-sm text-slate-200 mb-1">Blogger Név & Email</h3>
+                        <p class="text-xs text-slate-400 mb-3 font-mono text-[11px] bg-slate-900/60 p-1.5 rounded truncate">/blogger/NameAndEmailbyId?id={id}</p>
+                    </div>
+                    <div class="space-y-2 pt-2 border-t border-slate-700/60">
+                        <div class="flex gap-2">
+                            <input type="number" id="t4-id" value="1" min="1" placeholder="Blogger ID" class="w-full bg-slate-900 border border-slate-600 text-xs rounded px-2 py-1 text-slate-200">
+                            <button onclick="runTask4()" class="bg-brand-600 hover:bg-brand-500 text-white text-xs px-3 py-1 rounded font-medium transition-colors whitespace-nowrap">
+                                Lekérés
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 5 Card -->
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700/80 flex flex-col justify-between hover:border-brand-500/50 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">5. Feladat</span>
+                            <span class="text-xs font-mono text-slate-400">GET</span>
+                        </div>
+                        <h3 class="font-semibold text-sm text-slate-200 mb-1">Név & Összes Bejegyzés (INNER JOIN)</h3>
+                        <p class="text-xs text-slate-400 mb-3 font-mono text-[11px] bg-slate-900/60 p-1.5 rounded truncate">/blogger/NameAndAllPostbyId?id={id}</p>
+                    </div>
+                    <div class="space-y-2 pt-2 border-t border-slate-700/60">
+                        <div class="flex gap-2">
+                            <input type="number" id="t5-id" value="1" min="1" placeholder="Blogger ID" class="w-full bg-slate-900 border border-slate-600 text-xs rounded px-2 py-1 text-slate-200">
+                            <button onclick="runTask5()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-1 rounded font-medium transition-colors whitespace-nowrap">
+                                Lekérés
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task 6 Card -->
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700/80 flex flex-col justify-between hover:border-brand-500/50 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">6. Feladat</span>
+                            <span class="text-xs font-mono text-slate-400">GET</span>
+                        </div>
+                        <h3 class="font-semibold text-sm text-slate-200 mb-1">Összes Bejegyzés Száma</h3>
+                        <p class="text-xs text-slate-400 mb-3 font-mono text-[11px] bg-slate-900/60 p-1.5 rounded truncate">/blogger/TotalPostsCount</p>
+                    </div>
+                    <div class="space-y-2 pt-2 border-t border-slate-700/60">
+                        <button onclick="runTask6()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 rounded font-medium transition-colors">
+                            Összes Számlálása
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Task 7 Card -->
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700/80 flex flex-col justify-between hover:border-brand-500/50 transition-colors">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">7. Feladat</span>
+                            <span class="text-xs font-mono text-slate-400">GET</span>
+                        </div>
+                        <h3 class="font-semibold text-sm text-slate-200 mb-1">Blogger Bejegyzéseinek Száma</h3>
+                        <p class="text-xs text-slate-400 mb-3 font-mono text-[11px] bg-slate-900/60 p-1.5 rounded truncate">/blogger/PostCountByBloggerId?id={id}</p>
+                    </div>
+                    <div class="space-y-2 pt-2 border-t border-slate-700/60">
+                        <div class="flex gap-2">
+                            <input type="number" id="t7-id" value="1" min="1" placeholder="Blogger ID" class="w-full bg-slate-900 border border-slate-600 text-xs rounded px-2 py-1 text-slate-200">
+                            <button onclick="runTask7()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1 rounded font-medium transition-colors whitespace-nowrap">
+                                Számlálás
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Output & Visualizer Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-2">
+                <!-- Visual Structured Result -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700/80 p-5 flex flex-col">
+                    <h3 class="text-sm font-semibold text-slate-300 mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-desktop text-brand-400 mr-2"></i> Formázott Eredmény Nézet</span>
+                        <span id="taskVisualTag" class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-700 text-slate-300">Nincs adat</span>
+                    </h3>
+                    <div id="taskVisualOutput" class="flex-1 bg-slate-900/80 rounded-lg border border-slate-700/60 p-4 overflow-y-auto max-h-96 min-h-[220px] flex items-center justify-center text-slate-500 text-xs">
+                        Kattintson az egyik fenti feladat lekérdezés gombjára az eredmény megjelenítéséhez.
+                    </div>
+                </div>
+
+                <!-- Raw JSON Inspector -->
+                <div class="bg-slate-800 rounded-xl border border-slate-700/80 p-5 flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-semibold text-slate-300 flex items-center">
+                            <i class="fa-solid fa-code text-emerald-400 mr-2"></i> Nyers JSON Válasz
+                        </h3>
+                        <button onclick="copyRawJson('taskRawJson')" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 bg-slate-700 px-2.5 py-1 rounded">
+                            <i class="fa-regular fa-copy"></i> Másolás
+                        </button>
+                    </div>
+                    <pre id="taskRawJson" class="flex-1 font-mono text-xs text-emerald-400 bg-slate-950 rounded-lg p-4 overflow-x-auto border border-slate-800 max-h-96 min-h-[220px]">
+// A HTTP válasz JSON formátumban itt fog megjelenni...
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Bloggers Management -->
+        <div id="content-bloggers" class="tab-content hidden flex-1 flex flex-col gap-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700/80">
+                <div>
+                    <h2 class="text-base font-semibold text-white">Blogger Adatbázis Kezelés (/blogger)</h2>
+                    <p class="text-xs text-slate-400">Bloggere megtekintése, keresése, új hozzáadása, frissítése és törlése.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="loadAllBloggers()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-rotate"></i> Lista Frissítése
+                    </button>
+                    <button onclick="openBloggerModal('create')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs px-3.5 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> Új Blogger
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bloggers Table -->
+            <div class="bg-slate-800 rounded-xl border border-slate-700/80 overflow-hidden shadow-sm">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-900/80 text-slate-400 uppercase font-mono border-b border-slate-700">
+                            <tr>
+                                <th class="p-3.5">ID</th>
+                                <th class="p-3.5">Név</th>
+                                <th class="p-3.5">Email</th>
+                                <th class="p-3.5">Kor</th>
+                                <th class="p-3.5">Regisztráció</th>
+                                <th class="p-3.5 text-right">Műveletek</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bloggersTableBody" class="divide-y divide-slate-700/60 text-slate-300">
+                            <!-- Populated dynamically -->
+                            <tr>
+                                <td colspan="6" class="p-8 text-center text-slate-500">Adatok betöltése...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Blog Posts Management -->
+        <div id="content-posts" class="tab-content hidden flex-1 flex flex-col gap-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-800 p-4 rounded-xl border border-slate-700/80">
+                <div>
+                    <h2 class="text-base font-semibold text-white">Blogbejegyzések Kezelése (/blogpost)</h2>
+                    <p class="text-xs text-slate-400">Postok listázása, szűrése blogger ID szerint, felvétele és módosítása.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <div class="flex items-center gap-2 bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
+                        <span class="text-xs text-slate-400">Szűrés Blogger ID:</span>
+                        <input type="number" id="filterBloggerId" placeholder="Összes" class="bg-transparent border-none text-xs text-slate-200 w-16 focus:outline-none font-mono">
+                        <button onclick="filterPostsByBlogger()" class="text-xs text-brand-400 hover:text-brand-300 font-semibold">Szűrés</button>
+                    </div>
+                    <button onclick="loadAllPosts()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors">
+                        <i class="fa-solid fa-rotate"></i> Összes Post
+                    </button>
+                    <button onclick="openPostModal('create')" class="bg-brand-600 hover:bg-brand-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Új Bejegyzés
+                    </button>
+                </div>
+            </div>
+
+            <!-- Posts List / Grid -->
+            <div id="postsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal: Add / Edit Blogger -->
+    <div id="bloggerModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 max-w-md w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-3">
+                <h3 id="bloggerModalTitle" class="text-base font-semibold text-white">Új Blogger Hozzáadása</h3>
+                <button onclick="closeBloggerModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="bloggerForm" onsubmit="handleBloggerSubmit(event)" class="space-y-4">
+                <input type="hidden" id="bloggerFormId">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Név</label>
+                    <input type="text" id="bloggerFormName" required class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Email cím</label>
+                    <input type="email" id="bloggerFormEmail" required class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Életkor</label>
+                    <input type="number" id="bloggerFormAge" required min="10" max="120" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Jelszó</label>
+                    <input type="password" id="bloggerFormPassword" required class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-3 pt-3 border-t border-slate-700">
+                    <button type="button" onclick="closeBloggerModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs rounded-lg">Mégse</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs rounded-lg font-medium">Mentés</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add / Edit Blogpost -->
+    <div id="postModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 max-w-lg w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-700 pb-3">
+                <h3 id="postModalTitle" class="text-base font-semibold text-white">Új Bejegyzés Hozzáadása</h3>
+                <button onclick="closePostModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="postForm" onsubmit="handlePostSubmit(event)" class="space-y-4">
+                <input type="hidden" id="postFormId">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Cím (Title)</label>
+                    <input type="text" id="postFormTitle" required class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Tartalom (Content)</label>
+                    <textarea id="postFormContent" rows="5" required class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none"></textarea>
+                </div>
+                <div id="postFormBlogIdContainer">
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Blogger ID (blogId)</label>
+                    <input type="number" id="postFormBlogId" required min="1" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-xs text-slate-200 focus:border-brand-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-3 pt-3 border-t border-slate-700">
+                    <button type="button" onclick="closePostModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs rounded-lg">Mégse</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-500 text-white text-xs rounded-lg font-medium">Mentés</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        let config = {
+            baseUrl: 'http://localhost:5000',
+            useMock: true // Default enabled for immediate demo testing
+        };
+
+        // Mock Database Store
+        let mockData = {
+            bloggers: [
+                { id: 1, name: 'Kovacs Bela', email: 'kovacs.bela@gmail.com', age: 34, password: '***', registrationTime: '2021-03-14T09:12:00' },
+                { id: 2, name: 'Nagy Aniko', email: 'nagy.aniko@freemail.hu', age: 28, password: '***', registrationTime: '2021-04-02T14:35:10' },
+                { id: 3, name: 'Szabo Peter', email: 'szabo.peter@gmail.com', age: 52, password: '***', registrationTime: '2021-04-18T08:05:45' }
+            ],
+            posts: [
+                { id: 101, title: 'Első blog bejegyzésem', content: 'Üdvözlök mindenkit a blogomon! Ez az első bejegyzés tartalma.', postTime: '2022-01-10T10:00:00', updateTime: '2022-01-10T10:00:00', blogId: 1 },
+                { id: 102, title: 'Technológia és C# fejlesztés', content: 'Az ASP.NET Core Web API nagyszerű eszköz backend szolgáltatásokhoz.', postTime: '2022-02-15T14:20:00', updateTime: '2022-02-15T14:20:00', blogId: 1 },
+                { id: 103, title: 'Receptek és főzés', content: 'Kedvenc gulyásleves receptem bemutatása lépésről lépésre.', postTime: '2022-03-01T18:30:00', updateTime: '2022-03-01T18:30:00', blogId: 2 }
+            ]
+        };
+
+        // Initialize App
+        window.onload = () => {
+            document.getElementById('mockToggle').checked = config.useMock;
+            if(document.getElementById('mockToggleMobile')) {
+                document.getElementById('mockToggleMobile').checked = config.useMock;
+            }
+            updateStatusBadge();
+            runTask4(); // Pre-fill visualizer with Task 4
+            loadAllBloggers();
+            loadAllPosts();
+        };
+
+        function setBaseUrl(url) {
+            config.baseUrl = url;
+            document.getElementById('baseUrlInput').value = url;
+            if(document.getElementById('baseUrlInputMobile')) {
+                document.getElementById('baseUrlInputMobile').value = url;
+            }
+            updateStatusBadge();
+        }
+
+        function syncMobileUrl() {
+            const val = document.getElementById('baseUrlInputMobile').value;
+            setBaseUrl(val);
+        }
+
+        function toggleMockMode(isMock) {
+            config.useMock = isMock;
+            updateStatusBadge();
+        }
+
+        function updateStatusBadge() {
+            const badge = document.getElementById('connectionStatus');
+            const text = document.getElementById('statusText');
+            
+            if (config.useMock) {
+                badge.className = "flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                text.innerText = "Mock Mód (Szimulált)";
+            } else {
+                badge.className = "flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                text.innerText = `Szerver: ${config.baseUrl}`;
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2.5 rounded-t-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/30";
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.className = "tab-btn active px-4 py-2.5 rounded-t-lg font-medium text-sm transition-all duration-200 flex items-center gap-2 border-b-2 border-brand-500 text-brand-400 bg-slate-800/50";
+            
+            document.getElementById(`content-${tabName}`).classList.remove('hidden');
+        }
+
+        // Generic API Fetch Wrapper
+        async function apiCall(endpoint, method = 'GET', body = null) {
+            const url = document.getElementById('baseUrlInput').value.replace(/\/$/, '') + endpoint;
+            
+            // Handle Mock Mode
+            if (config.useMock) {
+                await new Promise(r => setTimeout(r, 200)); // Simulate latency
+                return handleMockRequest(endpoint, method, body);
+            }
+
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+                return { status: response.status, data: data };
+            } catch (err) {
+                console.error("API Call Error:", err);
+                return { 
+                    status: 500, 
+                    data: { message: `Szerver csatlakozási hiba (${url}). Indítsa el a C# backendet, vagy kapcsolja be a Mock Módot!`, error: err.message } 
+                };
+            }
+        }
+
+        // Mock Handler to emulate C# Controllers
+        function handleMockRequest(endpoint, method, body) {
+            const cleanEp = endpoint.split('?')[0];
+            const urlParams = new URLSearchParams(endpoint.includes('?') ? endpoint.split('?')[1] : '');
+            const idParam = parseInt(urlParams.get('id'));
+
+            // Blogger Controller Mocking
+            if (cleanEp === '/blogger') {
+                if (method === 'GET') {
+                    return { status: 200, data: { message: "Sikeres lekérdezés", result: mockData.bloggers } };
+                }
+                if (method === 'POST') {
+                    const newBlogger = { id: mockData.bloggers.length + 1, ...body, registrationTime: new Date().toISOString() };
+                    mockData.bloggers.push(newBlogger);
+                    return { status: 200, data: { message: "Sikeres felvétel.", result: body } };
+                }
+                if (method === 'DELETE') {
+                    const id = typeof body === 'number' ? body : idParam;
+                    mockData.bloggers = mockData.bloggers.filter(b => b.id !== id);
+                    return { status: 200, data: { message: "Sikeres törlés.", result: "" } };
+                }
+                if (method === 'PUT') {
+                    const index = mockData.bloggers.findIndex(b => b.id === idParam);
+                    if (index !== -1) mockData.bloggers[index] = { ...mockData.bloggers[index], ...body };
+                    return { status: 200, data: { message: "Sikeres frissítés.", result: body } };
+                }
+            }
+
+            if (cleanEp === '/blogger/byId') {
+                const blogger = mockData.bloggers.find(b => b.id === idParam);
+                if (blogger) return { status: 200, data: { message: "Sikeres lekérdezés", result: blogger } };
+                return { status: 200, data: { message: "Nincs ilyen Id.", result: null } };
+            }
+
+            if (cleanEp === '/blogger/NameAndEmailbyId') { // Task 4
+                const blogger = mockData.bloggers.find(b => b.id === idParam);
+                if (blogger) {
+                    return { status: 200, data: { message: "Sikeres lekérdezés", result: { name: blogger.name, email: blogger.email } } };
+                }
+                return { status: 200, data: { message: "Nincs ilyen Id.", result: null } };
+            }
+
+            if (cleanEp === '/blogger/NameAndAllPostbyId') { // Task 5
+                const blogger = mockData.bloggers.find(b => b.id === idParam);
+                if (!blogger) return { status: 200, data: { message: "Sikeres lekérdezés", result: [] } };
+                
+                const posts = mockData.posts
+                    .filter(p => p.blogId === idParam)
+                    .map(p => ({ name: blogger.name, title: p.title, content: p.content }));
+                
+                return { status: 200, data: { message: "Sikeres lekérdezés", result: posts } };
+            }
+
+            if (cleanEp === '/blogger/TotalPostsCount') { // Task 6
+                return { status: 200, data: { message: "Sikeres lekérdezés", result: { totalPosts: mockData.posts.length } } };
+            }
+
+            if (cleanEp === '/blogger/PostCountByBloggerId') { // Task 7
+                const count = mockData.posts.filter(p => p.blogId === idParam).length;
+                return { status: 200, data: { message: "Sikeres lekérdezés", result: { bloggerId: idParam, postCount: count } } };
+            }
+
+            // Blogposts Controller Mocking
+            if (cleanEp === '/blogpost') {
+                if (method === 'GET') {
+                    return { status: 200, data: { message: "Sikeres lekérdezés", result: mockData.posts } };
+                }
+                if (method === 'POST') {
+                    const newPost = { id: mockData.posts.length + 101, ...body, postTime: new Date().toISOString(), updateTime: new Date().toISOString() };
+                    mockData.posts.push(newPost);
+                    return { status: 200, data: { message: "Sikeres felvétel.", result: body } };
+                }
+                if (method === 'DELETE') {
+                    const id = typeof body === 'number' ? body : idParam;
+                    mockData.posts = mockData.posts.filter(p => p.id !== id);
+                    return { status: 200, data: { message: "Sikeres törlés.", result: "" } };
+                }
+                if (method === 'PUT') {
+                    const index = mockData.posts.findIndex(p => p.id === idParam);
+                    if (index !== -1) mockData.posts[index] = { ...mockData.posts[index], ...body, updateTime: new Date().toISOString() };
+                    return { status: 200, data: { message: "Sikeres frissítés.", result: body } };
+                }
+            }
+
+            if (cleanEp === '/blogpost/postByBloggerId') {
+                const posts = mockData.posts.filter(p => p.blogId === idParam);
+                if (posts.length > 0) return { status: 200, data: { message: "Sikeres lekérdezés", result: posts } };
+                return { status: 200, data: { message: "Nincs ilyen Id.", result: [] } };
+            }
+
+            return { status: 404, data: { message: "Végpont nem található" } };
+        }
+
+        // TASK 4 Execution
+        async function runTask4() {
+            const id = document.getElementById('t4-id').value;
+            const res = await apiCall(`/blogger/NameAndEmailbyId?id=${id}`);
+            displayTaskResult("4. Feladat (Name & Email)", res, (data) => {
+                if (!data.result) return `<div class="text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Nincs találat erre az ID-re.</div>`;
+                return `
+                    <div class="space-y-3 w-full">
+                        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                            <span class="text-slate-400 text-[11px] block uppercase">Név (Name)</span>
+                            <span class="text-white text-sm font-semibold">${data.result.name || 'N/A'}</span>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+                            <span class="text-slate-400 text-[11px] block uppercase">Email cím</span>
+                            <span class="text-brand-400 text-sm font-mono">${data.result.email || 'N/A'}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // TASK 5 Execution
+        async function runTask5() {
+            const id = document.getElementById('t5-id').value;
+            const res = await apiCall(`/blogger/NameAndAllPostbyId?id=${id}`);
+            displayTaskResult("5. Feladat (INNER JOIN Postok)", res, (data) => {
+                if (!data.result || data.result.length === 0) {
+                    return `<div class="text-slate-400"><i class="fa-solid fa-folder-open mr-1"></i> A bloggernek nincsenek bejegyzései.</div>`;
+                }
+                const items = data.result.map(p => `
+                    <div class="bg-slate-800 p-3 rounded-lg border border-slate-700/80 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <span class="text-indigo-400 font-semibold text-xs">${p.name}</span>
+                            <span class="text-[10px] text-slate-500 font-mono">INNER JOIN</span>
+                        </div>
+                        <h4 class="text-slate-200 font-medium text-xs">${p.title}</h4>
+                        <p class="text-slate-400 text-[11px] line-clamp-2">${p.content}</p>
+                    </div>
+                `).join('');
+                return `<div class="space-y-2 w-full max-h-80 overflow-y-auto pr-1">${items}</div>`;
+            });
+        }
+
+        // TASK 6 Execution
+        async function runTask6() {
+            const res = await apiCall('/blogger/TotalPostsCount');
+            displayTaskResult("6. Feladat (Összes Post)", res, (data) => {
+                const count = data.result ? (data.result.totalPosts ?? data.result) : 0;
+                return `
+                    <div class="text-center p-6 bg-slate-800/80 rounded-2xl border border-slate-700/80 w-full">
+                        <span class="text-slate-400 text-xs block mb-1">Adatbázisban lévő bejegyzések száma</span>
+                        <span class="text-4xl font-extrabold text-emerald-400 font-mono">${count}</span>
+                        <span class="text-xs text-slate-500 block mt-1">db bejegyzés</span>
+                    </div>
+                `;
+            });
+        }
+
+        // TASK 7 Execution
+        async function runTask7() {
+            const id = document.getElementById('t7-id').value;
+            const res = await apiCall(`/blogger/PostCountByBloggerId?id=${id}`);
+            displayTaskResult("7. Feladat (Blogger Bejegyzései)", res, (data) => {
+                const count = data.result ? (data.result.postCount ?? 0) : 0;
+                return `
+                    <div class="text-center p-6 bg-slate-800/80 rounded-2xl border border-slate-700/80 w-full">
+                        <span class="text-slate-400 text-xs block mb-1">Blogger (ID: ${id}) Bejegyzéseinek Száma</span>
+                        <span class="text-4xl font-extrabold text-amber-400 font-mono">${count}</span>
+                        <span class="text-xs text-slate-500 block mt-1">db bejegyzés ehhez a bloggerhez</span>
+                    </div>
+                `;
+            });
+        }
+
+        function displayTaskResult(title, response, formatterFn) {
+            document.getElementById('taskVisualTag').innerText = title;
+            document.getElementById('taskRawJson').innerText = JSON.stringify(response.data, null, 2);
+            
+            const visualBox = document.getElementById('taskVisualOutput');
+            visualBox.innerHTML = formatterFn(response.data);
+        }
+
+        function copyRawJson(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text);
+            alert("A JSON válasz a vágólapra másolva!");
+        }
+
+        // BLOGGER CRUD FUNCTIONS
+        async function loadAllBloggers() {
+            const res = await apiCall('/blogger');
+            const tbody = document.getElementById('bloggersTableBody');
+            
+            if (!res.data || !res.data.result || res.data.result.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">Nincsenek bloggerek az adatbázisban.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = res.data.result.map(b => `
+                <tr class="hover:bg-slate-700/30 transition-colors">
+                    <td class="p-3.5 font-mono text-brand-400 font-semibold">${b.id}</td>
+                    <td class="p-3.5 font-medium text-slate-200">${b.name}</td>
+                    <td class="p-3.5 text-slate-400 font-mono text-[11px]">${b.email}</td>
+                    <td class="p-3.5 text-slate-300">${b.age} év</td>
+                    <td class="p-3.5 text-slate-500 font-mono text-[10px]">${new Date(b.registrationTime).toLocaleDateString('hu-HU')}</td>
+                    <td class="p-3.5 text-right space-x-2">
+                        <button onclick="editBlogger(${b.id})" class="text-slate-400 hover:text-brand-400 transition-colors p-1" title="Szerkesztés">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button onclick="deleteBlogger(${b.id})" class="text-slate-400 hover:text-rose-400 transition-colors p-1" title="Törlés">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openBloggerModal(mode, data = null) {
+            document.getElementById('bloggerModal').classList.remove('hidden');
+            document.getElementById('bloggerModal').classList.add('flex');
+            
+            if (mode === 'create') {
+                document.getElementById('bloggerModalTitle').innerText = "Új Blogger Hozzáadása";
+                document.getElementById('bloggerFormId').value = "";
+                document.getElementById('bloggerForm').reset();
+            } else if (mode === 'edit' && data) {
+                document.getElementById('bloggerModalTitle').innerText = `Blogger Szerkesztése (#${data.id})`;
+                document.getElementById('bloggerFormId').value = data.id;
+                document.getElementById('bloggerFormName').value = data.name;
+                document.getElementById('bloggerFormEmail').value = data.email;
+                document.getElementById('bloggerFormAge').value = data.age;
+                document.getElementById('bloggerFormPassword').value = data.password || "";
+            }
+        }
+
+        function closeBloggerModal() {
+            document.getElementById('bloggerModal').classList.add('hidden');
+            document.getElementById('bloggerModal').classList.remove('flex');
+        }
+
+        async function editBlogger(id) {
+            const res = await apiCall(`/blogger/byId?id=${id}`);
+            if (res.data && res.data.result) {
+                openBloggerModal('edit', res.data.result);
+            }
+        }
+
+        async function handleBloggerSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('bloggerFormId').value;
+            const payload = {
+                name: document.getElementById('bloggerFormName').value,
+                email: document.getElementById('bloggerFormEmail').value,
+                age: parseInt(document.getElementById('bloggerFormAge').value),
+                password: document.getElementById('bloggerFormPassword').value
+            };
+
+            if (id) {
+                await apiCall(`/blogger?id=${id}`, 'PUT', payload);
+            } else {
+                await apiCall('/blogger', 'POST', payload);
+            }
+            closeBloggerModal();
+            loadAllBloggers();
+        }
+
+        async function deleteBlogger(id) {
+            if (confirm(`Biztosan törölni szeretné a #${id} azonosítójú bloggert?`)) {
+                await apiCall('/blogger', 'DELETE', id);
+                loadAllBloggers();
+            }
+        }
+
+        // BLOGPOST CRUD FUNCTIONS
+        async function loadAllPosts() {
+            const res = await apiCall('/blogpost');
+            renderPostsContainer(res.data ? res.data.result : []);
+        }
+
+        async function filterPostsByBlogger() {
+            const id = document.getElementById('filterBloggerId').value;
+            if (!id) {
+                loadAllPosts();
+                return;
+            }
+            const res = await apiCall(`/blogpost/postByBloggerId?id=${id}`);
+            renderPostsContainer(res.data ? res.data.result : []);
+        }
+
+        function renderPostsContainer(posts) {
+            const container = document.getElementById('postsContainer');
+            if (!posts || posts.length === 0) {
+                container.innerHTML = `<div class="col-span-full p-8 text-center text-slate-500 bg-slate-800 rounded-xl border border-slate-700">Nincsenek megjeleníthető bejegyzések.</div>`;
+                return;
+            }
+
+            container.innerHTML = posts.map(p => `
+                <div class="bg-slate-800 rounded-xl border border-slate-700 p-4 flex flex-col justify-between hover:border-slate-600 transition-all">
+                    <div>
+                        <div class="flex justify-between items-start gap-2 mb-2">
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">
+                                Blogger ID: ${p.blogId}
+                            </span>
+                            <span class="text-[10px] font-mono text-slate-500">ID: ${p.id}</span>
+                        </div>
+                        <h3 class="font-semibold text-sm text-slate-100 mb-1 line-clamp-1">${p.title}</h3>
+                        <p class="text-xs text-slate-400 line-clamp-3 mb-4">${p.content}</p>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-slate-700/60 text-[10px] text-slate-500 font-mono">
+                        <span>${new Date(p.postTime || Date.now()).toLocaleDateString('hu-HU')}</span>
+                        <div class="space-x-2">
+                            <button onclick="editPost(${p.id}, '${escapeHtml(p.title)}', '${escapeHtml(p.content)}', ${p.blogId})" class="text-slate-400 hover:text-brand-400">
+                                <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            </button>
+                            <button onclick="deletePost(${p.id})" class="text-slate-400 hover:text-rose-400">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function openPostModal(mode, data = null) {
+            document.getElementById('postModal').classList.remove('hidden');
+            document.getElementById('postModal').classList.add('flex');
+            
+            if (mode === 'create') {
+                document.getElementById('postModalTitle').innerText = "Új Bejegyzés Hozzáadása";
+                document.getElementById('postFormId').value = "";
+                document.getElementById('postFormBlogIdContainer').style.display = 'block';
+                document.getElementById('postForm').reset();
+            } else if (mode === 'edit' && data) {
+                document.getElementById('postModalTitle').innerText = `Bejegyzés Szerkesztése (#${data.id})`;
+                document.getElementById('postFormId').value = data.id;
+                document.getElementById('postFormTitle').value = data.title;
+                document.getElementById('postFormContent').value = data.content;
+                document.getElementById('postFormBlogId').value = data.blogId;
+                document.getElementById('postFormBlogIdContainer').style.display = 'none'; // C# UpdatePostDto only accepts title and content
+            }
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').classList.add('hidden');
+            document.getElementById('postModal').classList.remove('flex');
+        }
+
+        function editPost(id, title, content, blogId) {
+            openPostModal('edit', { id, title, content, blogId });
+        }
+
+        async function handlePostSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('postFormId').value;
+            
+            if (id) {
+                const payload = {
+                    title: document.getElementById('postFormTitle').value,
+                    content: document.getElementById('postFormContent').value
+                };
+                await apiCall(`/blogpost?id=${id}`, 'PUT', payload);
+            } else {
+                const payload = {
+                    title: document.getElementById('postFormTitle').value,
+                    content: document.getElementById('postFormContent').value,
+                    blogId: parseInt(document.getElementById('postFormBlogId').value)
+                };
+                await apiCall('/blogpost', 'POST', payload);
+            }
+            closePostModal();
+            loadAllPosts();
+        }
+
+        async function deletePost(id) {
+            if (confirm(`Biztosan törölni szeretné a #${id} azonosítójú bejegyzést?`)) {
+                await apiCall('/blogpost', 'DELETE', id);
+                loadAllPosts();
+            }
+        }
+    </script>
+</body>
+</html>
