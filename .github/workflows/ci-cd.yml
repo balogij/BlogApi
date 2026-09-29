@@ -16,7 +16,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: testdb
+          MYSQL_DATABASE: blog
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpassword
         ports:
@@ -46,7 +46,7 @@ jobs:
     # SQL script futtatása a GitHub Actions MySQL service konténeren
     - name: Initialize Database Schema
       run: |
-        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword testdb < blog.sql
+        mysql -h 127.0.0.1 -P 3306 -u testuser -p testpassword blog < blog.sql
 
     # 4. Projekt buildelése
     - name: Build project
