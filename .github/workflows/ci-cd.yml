@@ -96,7 +96,7 @@ jobs:
     
     environment:
       name: dev_env
-      url: https://your-webapi-app.onrender.com # Cseréld ki a saját éles/telepített URL-edre
+      url: https://github.com/balogij?tab=packages
 
     steps:
     - name: Deployment status check
