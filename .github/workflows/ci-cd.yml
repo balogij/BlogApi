@@ -21,7 +21,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: testdb
+          MYSQL_DATABASE: blog
           MYSQL_USER: testuser
           MYSQL_PASSWORD: testpassword
         ports:
@@ -46,7 +46,7 @@ jobs:
     # 3. Adatbázis inicializálása a gyökérben lévő blog.sql fájlból
     - name: Initialize MySQL Database
       run: |
-        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword testdb < blog.sql
+        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword blog < blog.sql
 
     # 4. C# függőségek letöltése és projekt buildelése
     - name: Restore dependencies
