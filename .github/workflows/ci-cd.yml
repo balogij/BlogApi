@@ -38,15 +38,15 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '10.0.x'
+        
+    # SQL script futtatása a GitHub Actions MySQL service konténeren
+    - name: Initialize Database Schema
+      run: |
+        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword blog < blog.sql
 
     # 3. C# függőségek letöltése
     - name: Restore dependencies
       run: dotnet restore
-
-    # SQL script futtatása a GitHub Actions MySQL service konténeren
-    - name: Initialize Database Schema
-      run: |
-        mysql -h 127.0.0.1 -P 3306 -u testuser -p testpassword blog < blog.sql
 
     # 4. Projekt buildelése
     - name: Build project
