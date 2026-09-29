@@ -46,7 +46,7 @@ jobs:
     # SQL script futtatása a GitHub Actions MySQL service konténeren
     - name: Initialize Database Schema
       run: |
-        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword testdb < ../blog.sql
+        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword testdb < blog.sql
 
     # 4. Projekt buildelése
     - name: Build project
