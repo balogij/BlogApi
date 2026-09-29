@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Másoljuk át a .csproj fájlt és töltsük le a csomagokat
-COPY ["BlogApi.csproj", "./"]
+COPY ["BlogApi/BlogApi.csproj", "./"]
 RUN dotnet restore "BlogApi.csproj"
 
 # Másoljuk át az összes többi kódfájlt és buildeljük a projektet
