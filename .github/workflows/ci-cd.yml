@@ -43,10 +43,10 @@ jobs:
       with:
         dotnet-version: '10.0.x'
 
-    # 3. Adatbázis inicializálása a gyökérben lévő blog.sql fájlból
-    - name: Initialize MySQL Database
-      run: |
-        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword blog < blog.sql
+#    # 3. Adatbázis inicializálása a gyökérben lévő blog.sql fájlból
+#    - name: Initialize MySQL Database
+#      run: |
+#        mysql -h 127.0.0.1 -P 3306 -u testuser -ptestpassword blog < blog.sql
 
     # 4. C# függőségek letöltése és projekt buildelése
     - name: Restore dependencies
