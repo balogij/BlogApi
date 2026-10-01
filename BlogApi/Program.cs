@@ -36,11 +36,11 @@ namespace BlogApi
             app.UseCors("AllowAll");
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
+//            if (app.Environment.IsDevelopment())
+//            {
                 app.MapOpenApi();
                 app.MapScalarApiReference();
-            }
+//            }
 
             app.UseHttpsRedirection();
 
