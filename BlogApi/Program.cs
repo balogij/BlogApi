@@ -46,6 +46,7 @@ namespace BlogApi
 
             app.UseAuthorization();
 
+            app.UseStaticFiles(); // Ez engedélyezi az index.html és egyéb statikus fájlok betöltését
 
             app.MapControllers();
 
