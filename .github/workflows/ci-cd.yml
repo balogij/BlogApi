@@ -22,8 +22,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: rootpassword
           MYSQL_DATABASE: blog
-          MYSQL_USER: testuser
-          MYSQL_PASSWORD: testpassword
+          MYSQL_USER: db71089
+          MYSQL_PASSWORD: 8a!R=6Mm3Ap-
         ports:
           - 3306:3306
         options: >-
@@ -58,7 +58,7 @@ jobs:
     # 5. Integrációs tesztek futtatása a MySQL adatbázison
     - name: Run Integration Tests
       env:
-        ConnectionStrings__DefaultConnection: "Server=127.0.0.1;Port=3306;Database=testdb;Uid=testuser;Pwd=testpassword;"
+        ConnectionStrings__DefaultConnection: "Server=db71089.databaseasp.net; Port=3306; Database=db71089; Uid=db71089; Pwd=8a!R=6Mm3Ap-; SslMode=None;"
       run: dotnet test --no-build --configuration Release --verbosity normal
 
     # 6. Docker Buildx beállítása
