@@ -1,0 +1,34 @@
+name: Deploy .NET Web API to MonsterASP.NET
+
+on:
+  push:
+    branches: [ "main" ] # Vagy a használt főszerkezet neve (master)
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Cseréld a használt .NET verzióra (pl. 7.0.x, 8.0.x)
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build and Publish API
+      run: dotnet publish -c Release -o ./publish
+
+    - name: Sync files via FTP to MonsterASP.NET
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        local-dir: ./publish/
+        server-dir: /wwwroot/ # A MonsterASP-n megadott célkönyvtár
+        dangerous-clean-slate: false
